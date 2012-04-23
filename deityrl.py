@@ -9,6 +9,7 @@ from helpers import AttrDict
 from console import Console
 from gameconfig import GameConfig
 from map import Map
+from mapmaker import MapMaker
 from player import Player
 
 from constants import Bind
@@ -21,7 +22,7 @@ class DeityRL:
     def __init__(self):
         self._game_config = GameConfig.load()
         self._config = Config()
-        self._worldmap = Map(self._game_config.world_width, self._game_config.world_height)
+        self._worldmap = None
         self._output = Console()
         self._input = self._output
         self._player = Player()
@@ -35,8 +36,13 @@ class DeityRL:
         raise Exception("no")
 
     def new_game(self):
-        self._player.xy(0, 0)
-        self._worldmap.generate(player=self._player)
+        self._player.xy(
+                int(self._game_config.world_width/2),
+                int(self._game_config.world_height/2),
+            )
+        maker = MapMaker()
+        self._worldmap = maker.generate(self._game_config.world_width, self._game_config.world_height)
+        self._worldmap.insert_objects(self._player)
         self._tick = 0
 
     def run(self):
@@ -85,7 +91,8 @@ class DeityRL:
             self.move_object(self._player, AttrDict({'x':binding[0], 'y':binding[1]}))
 
     def move_object(self, obj, movement):
-        self._worldmap.move_object(obj, movement)
+        if (self._worldmap.can_move_object(obj, movement)):
+            self._worldmap.move_object(obj, movement)
 
 if __name__ == "__main__":
     out = open('out.txt', 'w')

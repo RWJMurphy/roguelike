@@ -5,8 +5,8 @@ class GameConfig:
 
     def __init__(self):
         self.game_name = "DEITY RL"
-        self.world_width = 200
-        self.world_height = 200
+        self.world_width = 100
+        self.world_height = 100
 
     @staticmethod
     def load():

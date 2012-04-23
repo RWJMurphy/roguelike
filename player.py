@@ -6,6 +6,9 @@ class Player:
         self.x = None
         self.y = None
         self.z = 10
+
+        self.blocks_movement = True
+        self.blocks_light = True
     
     def xy(self, x=None, y=None):
         if x != None or y != None:
