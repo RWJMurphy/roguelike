@@ -1,17 +1,30 @@
 # -*- coding: utf-8 -*-
 import random
 
+from objects import GameObject
+import traits
+
+__all__ = ['Map', 'Tile']
+
 class Map:
-    def __init__(self, width=None, height=None):
+    def __init__(self, width=None, height=None, message_callback=None):
         self._width = width
         self._height = height
         # self._map[x][y] = [Tile, Object, etc.]
         self._map = [[[] for y in range(self._height)] for x in range(self._width)]
         self._objects = []
+        self._message = message_callback
 
     def restack(self):
         for x in range(self._width):
             for y in range(self._height):
+                for t in self._map[x][y]:
+                    if not t._alive:
+                        try:
+                            self._objects.remove(t)
+                        except:
+                            pass
+                        self._map[x][y].remove(t)
                 self._map[x][y].sort(key=lambda tile: tile.z, reverse=True)
 
     def set_tile(self, x, y, tile):
@@ -33,6 +46,8 @@ class Map:
 
     def can_move_object(self, obj, movement):
         new_x, new_y = obj.x + movement.x, obj.y + movement.y
+        if new_x < 0 or new_y < 0 or new_x >= self._width or new_y >= self._height:
+            return False
         dest_blocked = True in [x.blocks_movement for x in self._map[new_x][new_y]]
         return not dest_blocked
 
@@ -41,9 +56,27 @@ class Map:
         obj.xy(obj.x + movement.x, obj.y + movement.y)
         self._map[obj.x][obj.y].append(obj)
         return True
+    
+    def object_act_in_direction(self, obj, direction):
+        new_x, new_y = obj.x + direction.x, obj.y + direction.y
+        targets = self._map[new_x][new_y]
+        results = []
+        for t in targets:
+            try:
+                results.append(obj.oncollide(t))
+            except:
+                raise
+        for r in results:
+            if r is not None:
+                self.message(r.message)
+                self.insert_objects(r.objects)
 
     def get_view(self, center_x, center_y, width, height):
-        self.restack()
+        if width > self._width:
+            width = self._width
+        if height > self._height:
+            height = self._height
+
         top = center_y - int(height/2)
         left = center_x - int(width/2)
         if top < 0:
@@ -59,22 +92,40 @@ class Map:
         view = [[ self._map[x][y][0].char for x in range(left, left+width)] for y in range(top, top+height)]
         return view
 
-class Tile:
-    def __init__(self, char, name="", zindex = 0, blocks_movement = False, blocks_light = False):
-        self.char = char
-        self.name = name
-        self.z = zindex
-        self.blocks_movement = blocks_movement
-        self.blocks_light = blocks_light
+    def tick(self):
+        for o in self._objects:
+            o.tick(self)
+
+    def set_message(self, callback):
+        self._message = callback
+        
+    def message(self, msg):
+        if self._message:
+            self._message(msg)
+
+class Tile(GameObject):
+    def __init__(self, char, name="", x=None, y=None, zindex = 0, blocks_movement = False, blocks_light = False):
+        super().__init__(char, name, x, y, z=zindex, blocks_movement=blocks_movement, blocks_light=blocks_light)
 
     @staticmethod
-    def floor():
-        return Tile('.', "Floor")
+    def floor(x=None, y=None):
+        return Tile('.', "Floor", x, y)
 
     @staticmethod
-    def wall():
-        return Tile('#', "Wall", blocks_movement=True, blocks_light=True)
+    def wall(x=None, y=None):
+        tile =  Tile('#', "Wall", x, y, blocks_movement=True, blocks_light=True)
+        tile.add_trait(traits.Destroyable(
+                tile,
+                [ 
+                    lambda: Tile.floor(tile.x, tile.y),
+                    lambda: GameObject.debris(tile.x + random.randint(-5, 5), tile.y + random.randint(-5, 5)),
+                    lambda: GameObject.debris(tile.x + random.randint(-5, 5), tile.y + random.randint(-5, 5)),
+                    lambda: GameObject.debris(tile.x + random.randint(-5, 5), tile.y + random.randint(-5, 5)),
+                    lambda: GameObject.debris(tile.x + random.randint(-5, 5), tile.y + random.randint(-5, 5)),
+                ]
+            ))
+        return tile
 
     @staticmethod
-    def empty():
-        return Tile(' ', "A vast empty gulf of nothingness.", blocks_movement=True)
+    def empty(x=None, y=None):
+        return Tile(' ', "A vast empty gulf of nothingness.", x, y, blocks_movement=True)

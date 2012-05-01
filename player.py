@@ -1,21 +1,24 @@
 # -*- coding: utf-8 -*-
 
-class Player:
+from mobs import Mob
+import traits
+
+__all__ = ['Player']
+
+class Player(Mob):
     def __init__(self):
-        self.char = '@'
-        self.x = None
-        self.y = None
-        self.z = 10
+        super().__init__(
+                char='@',
+                name="Player",
+                blocks_light = True
+            )
+        self.add_trait(traits.Fightable(self, 99999))
 
-        self.blocks_movement = True
-        self.blocks_light = True
-    
-    def xy(self, x=None, y=None):
-        if x != None or y != None:
-            if x != None:
-                self.x = x
-            if y != None:
-                self.y = y
-        else:
-            return (self.x, self.y)
+    def tick(self, level_map):
+        pass
 
+    def oncollide(self, collided_with):
+        if collided_with.has_trait(traits.Destroyable):
+            return collided_with.ondestroy(self)
+        elif collided_with.has_trait(traits.Fightable):
+            return collided_with.onfought(self)

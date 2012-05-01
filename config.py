@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from constants import Bind
 
+__all__ = ['Config']
+
 class Config:
     keybindings = {
         'KEY_UP': Bind.MOVE_N,

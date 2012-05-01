@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 
-class GameConfig:
-    instance = None
+from helpers import AttrDict
 
-    def __init__(self):
-        self.game_name = "DEITY RL"
-        self.world_width = 100
-        self.world_height = 100
+__all__ = ['GameConfig']
 
-    @staticmethod
-    def load():
-        if GameConfig.instance == None:
-            GameConfig.instance = GameConfig()
-        return GameConfig.instance
+GameConfig = AttrDict({
+    'game_name': "DEITY RL",
+    'world_width': 100,
+    'world_height': 100,
+
+    'display': {
+        'sidebar_width': 20,
+        'messagebar_height': 8,
+    },
+})
+

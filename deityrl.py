@@ -6,26 +6,27 @@ import sys
 
 from helpers import AttrDict
 
+from config import Config
 from console import Console
+from constants import Bind
 from gameconfig import GameConfig
 from map import Map
 from mapmaker import MapMaker
 from player import Player
-
-from constants import Bind
-
-from config import Config
+import traits
 
 CONFIG_FILE = "deityrl.json"
 
 class DeityRL:
     def __init__(self):
-        self._game_config = GameConfig.load()
+        self._game_config = GameConfig
         self._config = Config()
         self._worldmap = None
-        self._output = Console()
+        self._output = Console(self._game_config.display)
         self._input = self._output
         self._player = Player()
+
+        self._message_buffer = []
 
         self._closed = False
     
@@ -42,11 +43,14 @@ class DeityRL:
             )
         maker = MapMaker()
         self._worldmap = maker.generate(self._game_config.world_width, self._game_config.world_height)
+        self._worldmap.set_message(self.add_message)
+
         self._worldmap.insert_objects(self._player)
         self._tick = 0
 
     def run(self):
         while not self._closed:
+            self._worldmap.restack()
             map_view = self._worldmap.get_view(
                     self._player.x,
                     self._player.y,
@@ -54,9 +58,12 @@ class DeityRL:
                     self._output.get_view_height()
                 )
             display_data = AttrDict({
+                    'view': 'main',
                     'tick': self._tick,
                     'xy': "{}, {}".format(self._player.x, self._player.y),
+                    'player_health': "{}/{}".format(self._player.max_health, self._player.health),
                     'map_view': map_view,
+                    'messages': self._message_buffer[-8:],
                 })
             self._output.render(display_data)
             key = self._input.get_key()
@@ -67,6 +74,7 @@ class DeityRL:
         self._console.teardown()
 
     def tick(self):
+        self._worldmap.tick()
         self._tick += 1
 
     def handle_key(self, key):
@@ -87,12 +95,22 @@ class DeityRL:
                 Bind.MOVE_W,
                 Bind.MOVE_NW
             ):
-            print(binding)
-            self.move_object(self._player, AttrDict({'x':binding[0], 'y':binding[1]}))
+            return self.move_object(self._player, AttrDict({'x':binding[0], 'y':binding[1]}))
 
     def move_object(self, obj, movement):
         if (self._worldmap.can_move_object(obj, movement)):
-            self._worldmap.move_object(obj, movement)
+            return self._worldmap.move_object(obj, movement)
+        else:
+            return self._worldmap.object_act_in_direction(obj, movement)
+
+    def add_message(self, message):
+        if isinstance(message, list):
+            self._message_buffer.extend(message)
+        else:
+            self._message_buffer.append(message)
+
+    def cleanup(self):
+        self._output.cleanup()
 
 if __name__ == "__main__":
     out = open('out.txt', 'w')
@@ -105,4 +123,9 @@ if __name__ == "__main__":
     else:
         game.new_game()
     
-    game.run()
+    try:
+        game.run()
+    except:
+        raise
+    finally:
+        game.cleanup()
