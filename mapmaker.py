@@ -27,6 +27,24 @@ class MapMaker:
             left = self.random.randrange(width - room_width)
             top = self.random.randrange(height - room_height)
             self.draw_box(the_map, left, top, room_width, room_height, Tile.wall)
+            door_side = random.randrange(4)
+            if door_side == 0: # top
+                offset = 1 + random.randrange(room_width - 2)
+                door_x = left + offset
+                door_y = top
+            elif door_side == 1: # bottom
+                offset = 1 + random.randrange(room_width - 2)
+                door_x = left + offset
+                door_y = top + room_height
+            elif door_side == 2: # left
+                offset = 1 + random.randrange(room_height - 2)
+                door_x = left
+                door_y = top + offset
+            elif door_side == 3: # right
+                offset = 1 + random.randrange(room_height - 2)
+                door_x = left + room_width
+                door_y = top + offset
+            the_map.set_tile(door_x, door_y, Tile.door(door_x, door_y))
 
         # peasants
         objects = []

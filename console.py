@@ -2,6 +2,8 @@
 import curses
 import time
 
+from color import Color
+
 __all__ = ['View', 'Console']
 
 class View:
@@ -10,6 +12,17 @@ class View:
         self.width = width
 
 class Console:
+    curses_colors = [
+            curses.COLOR_BLACK,
+            curses.COLOR_BLUE,
+            curses.COLOR_CYAN,
+            curses.COLOR_GREEN,
+            curses.COLOR_MAGENTA,
+            curses.COLOR_RED,
+            curses.COLOR_WHITE,
+            curses.COLOR_YELLOW,
+            ]
+
     def __init__(self, config):
         self._mainscreen = curses.initscr()
         curses.start_color()
@@ -35,6 +48,8 @@ class Console:
                 height - config.messagebar_height - 1, 0
             )
 
+        self.init_color_map()
+        self._curses_color_cache = {}
 
     def __del__(self):
         self._mainscreen.keypad(0)
@@ -42,6 +57,39 @@ class Console:
         curses.echo()
         curses.curs_set(2)
         curses.endwin()
+
+    def init_color_map(self):
+        self._curses_color_map = {}
+        for color_number in Console.curses_colors:
+            r, g, b = curses.color_content(color_number)
+            r = r * 255.0 / 1000
+            g = g * 255.0 / 1000
+            b = b * 255.0 / 1000
+            color = Color(r, g, b)
+            self._curses_color_map[color_number] = color
+            curses.init_pair(color_number+1, color_number, curses.COLOR_BLACK)
+
+    def nearest_curses_color(self, color):
+        if color in self._curses_color_cache:
+            return self._curses_color_cache[color]
+
+        print("Finding nearest color to {}".format(color.rgb()))
+
+        min_distance = None
+        best_color = None
+        for curses_color in Console.curses_colors:
+            distance = color.distance(self._curses_color_map[curses_color])
+            print("\tdistance from {} is {}".format(curses.color_content(curses_color), distance))
+            if min_distance is None or distance < min_distance:
+                best_color = curses_color
+                min_distance = distance
+            if distance == 0:
+                break
+
+        print("Got {}".format(curses.color_content(best_color)))
+
+        self._curses_color_cache[color] = best_color
+        return best_color
 
     def cleanup(self):
         self._mainscreen.keypad(0)
@@ -54,7 +102,17 @@ class Console:
         if display_data.view == "main":
             y = 0
             for line in display_data.map_view:
-                self._map_view.addstr(y, 0, ''.join(line))
+                x = 0
+                for tile in line:
+                    curses_color = self.nearest_curses_color(tile.color)
+                    bg = curses.COLOR_BLACK
+
+                    self._map_view.addch(
+                            y, x, 
+                            tile.char, 
+                            curses.color_pair(self.nearest_curses_color(tile.color)+1)
+                        )
+                    x += 1
                 y += 1
 
             self._side_bar.erase()
@@ -83,4 +141,6 @@ class Console:
 
     def get_view_width(self):
         return self._map_view.getmaxyx()[1] - 1
+    
+
 

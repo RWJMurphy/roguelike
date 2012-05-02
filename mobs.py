@@ -9,8 +9,8 @@ import traits
 __all__ = ['Mob']
 
 class Mob(GameObject):
-    def __init__(self, char, name, speed=10, x=None, y=None, z=30, blocks_movement=True, blocks_light=False):
-        super().__init__(char, name, x, y, z, blocks_movement, blocks_light)
+    def __init__(self, char, name, speed=10, x=None, y=None, z=30, blocks_movement=True, blocks_light=False, color=None):
+        super().__init__(char, name, x, y, z, blocks_movement, blocks_light, color)
         self._speed = speed
 
     def tick(self, level_map):
@@ -25,7 +25,7 @@ class Mob(GameObject):
         p = Mob('@', "Peasant")
         p.add_trait(traits.Fightable(p, 10, [
             lambda: GameObject.corpse(p.name, p.x, p.y),
-            lambda: GameObject.debris(p.x + random.randint(-5, 5), p.y + random.randint(-5, 5)),
-            lambda: GameObject.debris(p.x + random.randint(-5, 5), p.y + random.randint(-5, 5)),
+            lambda: GameObject.debris(p.x + random.randint(-2, 2), p.y + random.randint(-2, 2), color=(255, 0, 0)),
+            lambda: GameObject.debris(p.x + random.randint(-2, 2), p.y + random.randint(-2, 2), color=(255, 0, 0)),
         ]))
         return p

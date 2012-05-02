@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from color import Color
 from mobs import Mob
 import traits
 
@@ -10,7 +11,8 @@ class Player(Mob):
         super().__init__(
                 char='@',
                 name="Player",
-                blocks_light = True
+                blocks_light = True,
+                color=Color(0, 0, 255)
             )
         self.add_trait(traits.Fightable(self, 99999))
 

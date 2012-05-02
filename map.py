@@ -89,7 +89,7 @@ class Map:
         elif left > (self._width - width):
             left = self._width - width
 
-        view = [[ self._map[x][y][0].char for x in range(left, left+width)] for y in range(top, top+height)]
+        view = [[ self._map[x][y][0] for x in range(left, left+width)] for y in range(top, top+height)]
         return view
 
     def tick(self):
@@ -113,7 +113,7 @@ class Tile(GameObject):
 
     @staticmethod
     def wall(x=None, y=None):
-        tile =  Tile('#', "Wall", x, y, blocks_movement=True, blocks_light=True)
+        tile = Tile('#', "Wall", x, y, 100, blocks_movement=True, blocks_light=True)
         tile.add_trait(traits.Destroyable(
                 tile,
                 [ 
@@ -129,3 +129,18 @@ class Tile(GameObject):
     @staticmethod
     def empty(x=None, y=None):
         return Tile(' ', "A vast empty gulf of nothingness.", x, y, blocks_movement=True)
+
+    @staticmethod
+    def door(x=None, y=None):
+        tile = Tile('+', "Door", x, y)
+        tile.add_trait(traits.Openable(tile))
+        tile.add_trait(traits.Destroyable(
+            tile,
+            [
+                lambda: Tile.floor(tile.x, tile.y),
+                lambda: GameObject.debris(tile.x + random.randint(-2, 2), tile.y + random.randint(-2, 2)),
+                lambda: GameObject.debris(tile.x + random.randint(-2, 2), tile.y + random.randint(-2, 2)),
+            ]
+        ))
+        return tile
+

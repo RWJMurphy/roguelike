@@ -1,9 +1,24 @@
 # -*- coding: utf-8 -*-
 
+from color import Color
+
+__all__ = ['GameObject']
+
 class GameObject:
-    def __init__(self, char, name, x=None, y=None, z=20, blocks_movement=True, blocks_light=False):
+    def __init__(self, char, name, x=None, y=None, z=20, blocks_movement=True, blocks_light=False, color=None):
         self.char = char
         self.name = name
+
+        if color is None:
+            color = Color(255, 255, 255)
+        elif isinstance(color, tuple):
+            if len(color) == 3:
+                color = Color(*color)
+            else:
+                raise ValueError("If color is a tuple, it must be a 3 tuple")
+        elif not isinstance(color, Color):
+            raise ValueError("color must be a Color() instance, or a 3 tuple")
+        self.color = color
 
         self.x = x
         self.y = y
@@ -47,13 +62,13 @@ class GameObject:
         pass
     
     @staticmethod
-    def debris(x=None, y=None, name="Debris"):
-        return GameObject('*', name, x, y, blocks_movement=False)
+    def debris(x=None, y=None, name="Debris", color=None):
+        return GameObject('*', name, x, y, blocks_movement=False, color=color)
 
     @staticmethod
-    def corpse(name=None, x=None, y=None):
+    def corpse(name=None, x=None, y=None, color=Color(122, 0, 0)):
         if name is None:
             name = "corpse"
         else:
             name = name + " corpse"
-        return GameObject('%', name, x, y, blocks_movement=False)
+        return GameObject('%', name, x, y, blocks_movement=False, color=color)

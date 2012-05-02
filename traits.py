@@ -48,3 +48,25 @@ class Destroyable(Trait):
             'objects': [drop() for drop in self._drops],
         })
         return result
+
+class Openable(Trait):
+    def __init__(self, parent, open=False, state_chars=None):
+        super().__init__(parent)
+
+        if state_chars is None:
+            state_chars = "_+"
+
+        self._open_char = state_chars[0]
+        self._closed_char = state_chars[1]
+
+        self._open = not open
+        self.ontoggle()
+
+    def ontoggle(self):
+        self._open = not self._open
+
+        self._parent.blocks_movement = not self._open
+        if self._open:
+            self._parent.char = self._open_char
+        else:
+            self._parent.char = self._closed_char
