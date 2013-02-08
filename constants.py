@@ -11,3 +11,4 @@ class Bind:
     MOVE_NW = (-1, -1)
 
     WAIT = 0
+    PICKUP = 1

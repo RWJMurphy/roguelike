@@ -18,6 +18,7 @@ class Config:
         'b': Bind.MOVE_SW,
         'n': Bind.MOVE_SE,
 
+        ',': Bind.PICKUP,
         ' ': Bind.WAIT,
         '.': Bind.WAIT,
     }
