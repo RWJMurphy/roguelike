@@ -31,6 +31,7 @@ class GameObject(object):
         self._traits = []
 
         self._alive = True
+        self._energy = 0
 
     def xy(self, x=None, y=None):
         if x != None or y != None:
@@ -61,7 +62,10 @@ class GameObject(object):
 
     def tick(self, level_map):
         pass
-    
+
+    def restore_energy(self):
+        pass
+
     @staticmethod
     def debris(x=None, y=None, name="Debris", color=None):
         d = GameObject('*', name, x, y, blocks_movement=False, color=color)
