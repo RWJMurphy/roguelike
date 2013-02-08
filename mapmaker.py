@@ -55,6 +55,14 @@ class MapMaker:
             p.xy(x, y)
             objects.append(p)
 
+        # dogs
+        for i in range(self.random.randrange(10, 100)):
+            d = Mob.dog()
+            x = self.random.randrange(width)
+            y = self.random.randrange(height)
+            d.xy(x, y)
+            objects.append(d)
+
         the_map.insert_objects(objects)
 
         return the_map
