@@ -17,11 +17,17 @@ class Mob(GameObject):
         self._inventory_max_weight = 0
 
     def tick(self, level_map):
-        dx = random.randint(-1, 1)
-        dy = random.randint(-1, 1)
-        movement = AttrDict({'x': dx, 'y': dy})
-        if (level_map.can_move_object(self, movement)):
-            level_map.move_object(self, movement)
+        roll = random.randrange(100)
+        if 0 <= roll < 10:
+            level_map.grab_object(self)
+        elif 10 <= roll <= 90:
+            dx = random.randint(-1, 1)
+            dy = random.randint(-1, 1)
+            movement = AttrDict({'x': dx, 'y': dy})
+            if (level_map.can_move_object(self, movement)):
+                level_map.move_object(self, movement)
+        elif 90 <= roll < 100:
+            pass
 
     def ongrab(self, target):
         if self._inventory_current_weight + target._weight > self._inventory_max_weight:
