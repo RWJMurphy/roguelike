@@ -65,6 +65,20 @@ class Destroyable(Trait):
         })
         return result
 
+class Carryable(Trait):
+    def __init__(self, parent, weight, carrier=None):
+        super().__init__(parent)
+        self._weight = weight
+        self._carrier = carrier
+
+    def ongrabbed(self, carrier):
+        self.carrier = carrier
+        return True
+
+    def ondrop(self):
+        self.carrier = None
+        return True
+
 class Openable(Trait):
     def __init__(self, parent, open=False, state_chars=None):
         super().__init__(parent)
