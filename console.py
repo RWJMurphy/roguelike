@@ -116,6 +116,11 @@ class Console:
             self._side_bar.addstr(2, 1, "Turn: {}".format(display_data.tick))
             self._side_bar.addstr(3, 1, " Pos: {}".format(display_data.xy))
 
+            self._side_bar.addstr(5, 1, "Inventory")
+            for i, item in enumerate(display_data.player_inventory):
+                self._side_bar.addstr(6 + i, 5, item)
+
+
             self._message_bar.erase()
             y = 0
             for line in display_data.messages:

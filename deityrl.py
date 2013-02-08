@@ -62,6 +62,7 @@ class DeityRL:
                     'tick': self._tick,
                     'xy': "{}, {}".format(self._player.x, self._player.y),
                     'player_health': "{}/{}".format(self._player.max_health, self._player.health),
+                    'player_inventory': [i.name for i in self._player._inventory],
                     'map_view': map_view,
                     'messages': self._message_buffer[-8:],
                 })
