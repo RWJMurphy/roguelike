@@ -17,11 +17,11 @@ class Fightable(Trait):
             drops = []
         self._drops = drops
 
-        self.defense = 0
-        self.attack = 10
+        self.defense = lambda: 0
+        self.attack = lambda: 10
 
     def onfought(self, attacker):
-        damage = attacker.attack() - self.defense
+        damage = attacker.attack() - self.defense()
         self.health -= damage
         result = AttrDict({
             'message': "{} attacks {} for {}".format(attacker.name, self._parent.name, damage),
@@ -86,3 +86,4 @@ class Openable(Trait):
             self._parent.char = self._open_char
         else:
             self._parent.char = self._closed_char
+        return True
