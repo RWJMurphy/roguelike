@@ -70,6 +70,7 @@ class Map:
             if r is not None:
                 self.message(r.message)
                 self.insert_objects(r.objects)
+        return True
 
     def get_view(self, center_x, center_y, width, height):
         if width > self._width:
@@ -98,7 +99,7 @@ class Map:
 
     def set_message(self, callback):
         self._message = callback
-        
+
     def message(self, msg):
         if self._message:
             self._message(msg)

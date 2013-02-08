@@ -67,8 +67,8 @@ class DeityRL:
                 })
             self._output.render(display_data)
             key = self._input.get_key()
-            self.handle_key(key)
-            self.tick()
+            if self.handle_key(key):
+                self.tick()
 
     def shutdown(self):
         self._console.teardown()
@@ -80,8 +80,12 @@ class DeityRL:
     def handle_key(self, key):
         if key in ('q', 'Q'):
             self._closed = True
+            return True
         elif key in self._config.keybindings:
-            self.act_on_bound_key(key)
+            return self.act_on_bound_key(key)
+        else:
+            self.add_message("Unbound key '{}'".format(key))
+            return False
 
     def act_on_bound_key(self, key):
         binding = self._config.keybindings[key]
@@ -96,6 +100,10 @@ class DeityRL:
                 Bind.MOVE_NW
             ):
             return self.move_object(self._player, AttrDict({'x':binding[0], 'y':binding[1]}))
+        elif binding == Bind.PICKUP:
+            return self._worldmap.grab_object(self._player)
+        elif binding == Bind.WAIT:
+            return True
 
     def move_object(self, obj, movement):
         if (self._worldmap.can_move_object(obj, movement)):

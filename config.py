@@ -17,4 +17,7 @@ class Config:
         'u': Bind.MOVE_NE,
         'b': Bind.MOVE_SW,
         'n': Bind.MOVE_SE,
+
+        ' ': Bind.WAIT,
+        '.': Bind.WAIT,
     }

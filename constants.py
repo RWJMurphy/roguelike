@@ -9,3 +9,5 @@ class Bind:
     MOVE_SW = (-1, 1)
     MOVE_W = (-1, 0)
     MOVE_NW = (-1, -1)
+
+    WAIT = 0
