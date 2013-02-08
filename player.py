@@ -11,6 +11,7 @@ class Player(Mob):
         super().__init__(
                 char='@',
                 name="Player",
+                speed=5,
                 blocks_light = True,
                 color=Color(0, 0, 255)
             )
