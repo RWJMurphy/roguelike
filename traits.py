@@ -24,6 +24,7 @@ class Fightable(Trait):
         damage = attacker.attack() - self.defense()
         self.health -= damage
         result = AttrDict({
+            'cost': 1,
             'message': "{} attacks {} for {}".format(attacker.name, self._parent.name, damage),
             'objects': [drop() for drop in self._drops],
         })
@@ -66,6 +67,7 @@ class Destroyable(Trait):
         self._parent.die()
         self._destroyed = True
         result = AttrDict({
+            'cost': 5,
             'message': "{} destroys the {}!".format(destroyer.name, self._parent.name),
             'objects': [drop() for drop in self._drops],
         })
