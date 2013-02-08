@@ -35,7 +35,7 @@ class GameObject:
         for trait in self._traits:
             if hasattr(trait, attr):
                 return getattr(trait, attr)
-        raise AttributeError
+        raise AttributeError("'{}' object has no attribute '{}'".format(self.__class__.__name__, attr))
 
     def xy(self, x=None, y=None):
         if x != None or y != None:
