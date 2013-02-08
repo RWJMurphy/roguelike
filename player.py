@@ -7,18 +7,22 @@ import traits
 __all__ = ['Player']
 
 class Player(Mob):
-    def __init__(self):
+    def __init__(self, action_callback, render_callback):
         super().__init__(
                 char='@',
                 name="Player",
                 blocks_light = True,
                 color=Color(0, 0, 255)
             )
+        self.action_callback = action_callback
+        self.render_callback = render_callback
         self._inventory_max_weight = 10000
         self.add_trait(traits.Fightable(self, 99999))
 
     def tick(self, level_map):
-        pass
+        r = self.action_callback()
+        self.render_callback()
+        return r
 
     def oncollide(self, collided_with):
         if collided_with.has_trait(traits.Destroyable):

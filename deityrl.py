@@ -24,7 +24,7 @@ class DeityRL:
         self._worldmap = None
         self._output = Console(self._game_config.display)
         self._input = self._output
-        self._player = Player()
+        self._player = Player(self.let_player_act, self.render)
 
         self._message_buffer = []
 
