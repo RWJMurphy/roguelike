@@ -56,7 +56,21 @@ class Map:
         obj.xy(obj.x + movement.x, obj.y + movement.y)
         self._map[obj.x][obj.y].append(obj)
         return True
-    
+
+    def grab_object(self, obj):
+        items = self._map[obj.x][obj.y]
+        for i in items:
+            if i.has_trait(traits.Carryable):
+                r = obj.ongrab(i)
+                self.message(r.message)
+                if r.success:
+                    i.ongrabbed(obj)
+                    items.remove(i)
+                    return True
+                else:
+                    break
+        return False
+
     def object_act_in_direction(self, obj, direction):
         new_x, new_y = obj.x + direction.x, obj.y + direction.y
         targets = self._map[new_x][new_y]
