@@ -20,8 +20,8 @@ class Player(Mob):
         self.add_trait(traits.Fightable(self, 99999))
 
     def tick(self, level_map):
-        r = self.action_callback()
         self.render_callback()
+        r = self.action_callback()
         return r
 
     def oncollide(self, collided_with):
