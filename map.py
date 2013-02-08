@@ -104,12 +104,12 @@ class Map:
             self._message(msg)
 
 class Tile(GameObject):
-    def __init__(self, char, name="", x=None, y=None, zindex = 0, blocks_movement = False, blocks_light = False):
-        super().__init__(char, name, x, y, z=zindex, blocks_movement=blocks_movement, blocks_light=blocks_light)
+    def __init__(self, char, name="", x=None, y=None, zindex = 0, blocks_movement=False, blocks_light=False, color=None):
+        super().__init__(char, name, x, y, z=zindex, blocks_movement=blocks_movement, blocks_light=blocks_light, color=color)
 
     @staticmethod
     def floor(x=None, y=None):
-        return Tile('.', "Floor", x, y)
+        return Tile('.', "Floor", x, y, color=(100, 100, 0))
 
     @staticmethod
     def wall(x=None, y=None):
