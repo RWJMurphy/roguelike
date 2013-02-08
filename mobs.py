@@ -12,6 +12,9 @@ class Mob(GameObject):
     def __init__(self, char, name, speed=10, x=None, y=None, z=30, blocks_movement=True, blocks_light=False, color=None):
         super().__init__(char, name, x, y, z, blocks_movement, blocks_light, color)
         self._speed = speed
+        self._inventory = []
+        self._inventory_current_weight = 0
+        self._inventory_max_weight = 0
 
     def tick(self, level_map):
         dx = random.randint(-1, 1)
@@ -19,6 +22,21 @@ class Mob(GameObject):
         movement = AttrDict({'x': dx, 'y': dy})
         if (level_map.can_move_object(self, movement)):
             level_map.move_object(self, movement)
+
+    def ongrab(self, target):
+        if self._inventory_current_weight + target._weight > self._inventory_max_weight:
+            result = AttrDict({
+                'success': False,
+                'message': '{} cannot pick up {}, it is too heavy'.format(self.name, target._parent.name),
+            })
+        else:
+            self._inventory.append(target)
+            self._inventory_current_weight += target._weight
+            result = AttrDict({
+                'success': True,
+                'message': '{} picks up {}'.format(self.name, target._parent.name),
+            })
+        return result
 
     @staticmethod
     def peasant():
