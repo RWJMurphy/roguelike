@@ -73,6 +73,10 @@ class DeityRL:
             })
         self._output.render(display_data)
 
+    def let_player_act(self):
+        key = self._input.get_key()
+        self.handle_key(key)
+
     def shutdown(self):
         self._console.teardown()
 
