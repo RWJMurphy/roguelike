@@ -5,7 +5,7 @@ import traits
 
 __all__ = ['GameObject']
 
-class GameObject:
+class GameObject(object):
     def __init__(self, char, name, x=None, y=None, z=20, blocks_movement=True, blocks_light=False, color=None):
         self.char = char
         self.name = name
@@ -32,12 +32,6 @@ class GameObject:
 
         self._alive = True
 
-    def __getattr__(self, attr):
-        for trait in self._traits:
-            if hasattr(trait, attr):
-                return getattr(trait, attr)
-        raise AttributeError("'{}' object has no attribute '{}'".format(self.__class__.__name__, attr))
-
     def xy(self, x=None, y=None):
         if x != None or y != None:
             if x != None:
@@ -46,6 +40,12 @@ class GameObject:
                 self.y = y
         else:
             return (self.x, self.y)
+
+    def __getattribute__(self, attr):
+        for trait in object.__getattribute__(self, '_traits'):
+            if hasattr(trait, attr):
+                return getattr(trait, attr)
+        return object.__getattribute__(self, attr)
 
     def add_trait(self, trait):
         self._traits.append(trait)
