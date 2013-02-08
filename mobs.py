@@ -9,12 +9,16 @@ import traits
 __all__ = ['Mob']
 
 class Mob(GameObject):
-    def __init__(self, char, name, speed=10, x=None, y=None, z=30, blocks_movement=True, blocks_light=False, color=None):
+    def __init__(self, char, name, speed=1, x=None, y=None, z=30, blocks_movement=True, blocks_light=False, color=None):
         super().__init__(char, name, x, y, z, blocks_movement, blocks_light, color)
-        self._speed = speed
+        self._speed = speed # action points per tick
+        self._energy = 0.0
         self._inventory = []
         self._inventory_current_weight = 0
         self._inventory_max_weight = 0
+
+    def restore_energy(self, ticks=1):
+        self._energy += self._speed * ticks
 
     def tick(self, level_map):
         roll = random.randrange(100)
