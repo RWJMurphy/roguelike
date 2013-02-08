@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from color import Color
+import traits
 
 __all__ = ['GameObject']
 
@@ -63,7 +64,9 @@ class GameObject:
     
     @staticmethod
     def debris(x=None, y=None, name="Debris", color=None):
-        return GameObject('*', name, x, y, blocks_movement=False, color=color)
+        d = GameObject('*', name, x, y, blocks_movement=False, color=color)
+        d.add_trait(traits.Carryable(d, 5))
+        return d
 
     @staticmethod
     def corpse(name=None, x=None, y=None, color=Color(122, 0, 0)):
@@ -71,4 +74,6 @@ class GameObject:
             name = "corpse"
         else:
             name = name + " corpse"
-        return GameObject('%', name, x, y, blocks_movement=False, color=color)
+        c = GameObject('%', name, x, y, blocks_movement=False, color=color)
+        c.add_trait(traits.Carryable(c, 100))
+        return c
