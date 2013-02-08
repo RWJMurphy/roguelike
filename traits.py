@@ -21,7 +21,7 @@ class Fightable(Trait):
         self.attack = 10
 
     def onfought(self, attacker):
-        damage = attacker.attack - self.defense
+        damage = attacker.attack() - self.defense
         self.health -= damage
         result = AttrDict({
             'message': "{} attacks {} for {}".format(attacker.name, self._parent.name, damage),
@@ -31,6 +31,22 @@ class Fightable(Trait):
             result.message += ", killing {}!".format(self._parent.name)
             self._parent.die()
         return result
+
+class Hostile(Trait):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+    def tick(self, level_map):
+        dx = random.randint(-1, 1)
+        dy = random.randint(-1, 1)
+        movement = AttrDict({'x': dx, 'y': dy})
+        if (level_map.can_move_object(self, movement)):
+            level_map.move_object(self, movement)
+
+class MeleeAttack(Trait):
+    def __init__(self, parent, damage_function):
+        super().__init__(parent)
+        self.attack = damage_function
 
 class Destroyable(Trait):
     def __init__(self, parent, drops=None):
