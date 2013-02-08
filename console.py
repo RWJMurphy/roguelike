@@ -112,13 +112,14 @@ class Console:
                 y += 1
 
             self._side_bar.erase()
-            self._side_bar.addstr(1, 1, "  HP: {}".format(display_data.player_health))
-            self._side_bar.addstr(2, 1, "Turn: {}".format(display_data.tick))
-            self._side_bar.addstr(3, 1, " Pos: {}".format(display_data.xy))
+            self._side_bar.addstr(1, 1, "    HP: {}".format(display_data.player_health))
+            self._side_bar.addstr(2, 1, "Energy: {}".format(display_data.player_energy))
+            self._side_bar.addstr(3, 1, "  Turn: {}".format(display_data.tick))
+            self._side_bar.addstr(4, 1, "   Pos: {}".format(display_data.xy))
 
-            self._side_bar.addstr(5, 1, "Inventory")
+            self._side_bar.addstr(6, 1, "Inventory")
             for i, item in enumerate(display_data.player_inventory):
-                self._side_bar.addstr(6 + i, 5, item)
+                self._side_bar.addstr(7 + i, 5, item)
 
 
             self._message_bar.erase()
