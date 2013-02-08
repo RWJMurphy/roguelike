@@ -56,10 +56,10 @@ class Mob(GameObject):
 
     def dog():
         d = Mob('d', "Dog")
-        d.add_trait(traits.Fightable(p, 5, [
-            lambda: GameObject.corpse(p.name, p.x, p.y),
-            lambda: GameObject.debris(p.x + random.randint(-2, 2), p.y + random.randint(-2, 2), color=(255, 0, 0))
+        d.add_trait(traits.Fightable(d, 5, [
+            lambda: GameObject.corpse(d.name, d.x, d.y),
+            lambda: GameObject.debris(d.x + random.randint(-2, 2), d.y + random.randint(-2, 2), color=(255, 0, 0))
         ]))
         d.add_trait(traits.Hostile(d))
-        d.add_trait(traits.MeleeAttack(d))
+        d.add_trait(traits.MeleeAttack(d, lambda: random.randint(4, 6)))
         return d
