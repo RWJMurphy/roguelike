@@ -14,6 +14,7 @@ class Player(Mob):
                 blocks_light = True,
                 color=Color(0, 0, 255)
             )
+        self._inventory_max_weight = 10000
         self.add_trait(traits.Fightable(self, 99999))
 
     def tick(self, level_map):
