@@ -50,26 +50,28 @@ class DeityRL:
 
     def run(self):
         while not self._closed:
-            self._worldmap.restack()
-            map_view = self._worldmap.get_view(
-                    self._player.x,
-                    self._player.y,
-                    self._output.get_view_width(),
-                    self._output.get_view_height()
-                )
-            display_data = AttrDict({
-                    'view': 'main',
-                    'tick': self._tick,
-                    'xy': "{}, {}".format(self._player.x, self._player.y),
-                    'player_health': "{}/{}".format(self._player.max_health, self._player.health),
-                    'player_inventory': [i.name for i in self._player._inventory],
-                    'map_view': map_view,
-                    'messages': self._message_buffer[-8:],
-                })
-            self._output.render(display_data)
-            key = self._input.get_key()
-            if self.handle_key(key):
-                self.tick()
+            self.render()
+            self.tick()
+
+    def render(self):
+        self._worldmap.restack()
+        map_view = self._worldmap.get_view(
+                self._player.x,
+                self._player.y,
+                self._output.get_view_width(),
+                self._output.get_view_height()
+            )
+        display_data = AttrDict({
+                'view': 'main',
+                'tick': self._tick,
+                'xy': "{}, {}".format(self._player.x, self._player.y),
+                'player_health': "{}/{}".format(self._player.max_health, self._player.health),
+                'player_energy': self._player._energy,
+                'player_inventory': [i.name for i in self._player._inventory],
+                'map_view': map_view,
+                'messages': self._message_buffer[-8:],
+            })
+        self._output.render(display_data)
 
     def shutdown(self):
         self._console.teardown()
