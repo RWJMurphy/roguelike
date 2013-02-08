@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import math
 import random
 
 from objects import GameObject
@@ -27,12 +28,20 @@ class Map:
                         self._map[x][y].remove(t)
                 self._map[x][y].sort(key=lambda tile: tile.z, reverse=True)
 
-    def set_tile(self, x, y, tile):
+    def get_tile(self, x, y, pop=False):
         for obj in self._map[x][y]:
             if isinstance(obj, Tile):
-                self._map[x][y].remove(obj)
-                break
+                if pop:
+                    self._map[x][y].remove(obj)
+                return obj
+        return None
+
+    def set_tile(self, x, y, tile):
+        self.get_tile(x, y, True)
         self._map[x][y].insert(0, tile)
+
+    def get_move_cost(self, x, y):
+        return sum(item.move_cost for item in self._map[x][y])
 
     def insert_objects(self, obj):
         if obj == None:
@@ -52,10 +61,14 @@ class Map:
         return not dest_blocked
 
     def move_object(self, obj, movement):
+        new_x, new_y = obj.x + movement.x, obj.y + movement.y
         self._map[obj.x][obj.y].remove(obj)
-        obj.xy(obj.x + movement.x, obj.y + movement.y)
+        obj.xy(new_x, new_y)
         self._map[obj.x][obj.y].append(obj)
-        return True
+
+        distance = math.sqrt(movement.x**2 + movement.y**2)
+        cost = self.get_move_cost(new_x, new_y) * distance
+        return cost
 
     def grab_object(self, obj):
         items = self._map[obj.x][obj.y]
@@ -73,18 +86,21 @@ class Map:
 
     def object_act_in_direction(self, obj, direction):
         new_x, new_y = obj.x + direction.x, obj.y + direction.y
-        targets = self._map[new_x][new_y]
         results = []
+        cost = 0
+        try:
+            targets = self._map[new_x][new_y]
+        except IndexError:
+            return 0
+
         for t in targets:
-            try:
-                results.append(obj.oncollide(t))
-            except:
-                raise
+            results.append(obj.oncollide(t))
         for r in results:
             if r is not None:
+                cost += r.cost
                 self.message(r.message)
                 self.insert_objects(r.objects)
-        return True
+        return cost
 
     def get_view(self, center_x, center_y, width, height):
         if width > self._width:
@@ -119,8 +135,8 @@ class Map:
             self._message(msg)
 
 class Tile(GameObject):
-    def __init__(self, char, name="", x=None, y=None, zindex = 0, blocks_movement=False, blocks_light=False, color=None):
-        super().__init__(char, name, x, y, z=zindex, blocks_movement=blocks_movement, blocks_light=blocks_light, color=color)
+    def __init__(self, char, name="", x=None, y=None, zindex = 0, blocks_movement=False, blocks_light=False, color=None, move_cost=1):
+        super().__init__(char, name, x, y, z=zindex, blocks_movement=blocks_movement, blocks_light=blocks_light, color=color, move_cost=move_cost)
 
     @staticmethod
     def floor(x=None, y=None):
