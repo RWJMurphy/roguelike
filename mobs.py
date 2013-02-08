@@ -29,3 +29,13 @@ class Mob(GameObject):
             lambda: GameObject.debris(p.x + random.randint(-2, 2), p.y + random.randint(-2, 2), color=(255, 0, 0)),
         ]))
         return p
+
+    def dog():
+        d = Mob('d', "Dog")
+        d.add_trait(traits.Fightable(p, 5, [
+            lambda: GameObject.corpse(p.name, p.x, p.y),
+            lambda: GameObject.debris(p.x + random.randint(-2, 2), p.y + random.randint(-2, 2), color=(255, 0, 0))
+        ]))
+        d.add_trait(traits.Hostile(d))
+        d.add_trait(traits.MeleeAttack(d))
+        return d
