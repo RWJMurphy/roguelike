@@ -73,20 +73,16 @@ class Console:
         if color in self._curses_color_cache:
             return self._curses_color_cache[color]
 
-        print("Finding nearest color to {}".format(color.rgb()))
 
         min_distance = None
         best_color = None
         for curses_color in Console.curses_colors:
             distance = color.distance(self._curses_color_map[curses_color])
-            print("\tdistance from {} is {}".format(curses.color_content(curses_color), distance))
             if min_distance is None or distance < min_distance:
                 best_color = curses_color
                 min_distance = distance
             if distance == 0:
                 break
-
-        print("Got {}".format(curses.color_content(best_color)))
 
         self._curses_color_cache[color] = best_color
         return best_color
