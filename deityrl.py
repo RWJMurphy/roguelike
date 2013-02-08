@@ -111,7 +111,7 @@ class DeityRL:
         elif binding == Bind.PICKUP:
             return self._worldmap.grab_object(self._player)
         elif binding == Bind.WAIT:
-            return self._player._speed # wait 1 tick
+            self._player._energy -= self._player._speed # wait 1 tick
 
     def object_act_direction(self, obj, movement):
         if (self._worldmap.can_move_object(obj, movement)):
