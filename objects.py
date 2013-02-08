@@ -6,7 +6,7 @@ import traits
 __all__ = ['GameObject']
 
 class GameObject(object):
-    def __init__(self, char, name, x=None, y=None, z=20, blocks_movement=True, blocks_light=False, color=None):
+    def __init__(self, char, name, x=None, y=None, z=20, blocks_movement=True, blocks_light=False, color=None, move_cost=0):
         self.char = char
         self.name = name
 
@@ -27,6 +27,8 @@ class GameObject(object):
 
         self.blocks_movement = blocks_movement
         self.blocks_light = blocks_light
+
+        self.move_cost = move_cost
 
         self._traits = []
 
@@ -68,7 +70,7 @@ class GameObject(object):
 
     @staticmethod
     def debris(x=None, y=None, name="Debris", color=None):
-        d = GameObject('*', name, x, y, blocks_movement=False, color=color)
+        d = GameObject('*', name, x, y, blocks_movement=False, color=color, move_cost=1)
         d.add_trait(traits.Carryable(d, 5))
         return d
 
@@ -78,6 +80,6 @@ class GameObject(object):
             name = "corpse"
         else:
             name = name + " corpse"
-        c = GameObject('%', name, x, y, blocks_movement=False, color=color)
+        c = GameObject('%', name, x, y, blocks_movement=False, color=color, move_cost=1)
         c.add_trait(traits.Carryable(c, 100))
         return c

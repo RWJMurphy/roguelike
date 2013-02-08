@@ -79,10 +79,10 @@ class Map:
                 if r.success:
                     i.ongrabbed(obj)
                     items.remove(i)
-                    return True
+                    return i
                 else:
                     break
-        return False
+        return None
 
     def object_act_in_direction(self, obj, direction):
         new_x, new_y = obj.x + direction.x, obj.y + direction.y
@@ -125,7 +125,16 @@ class Map:
 
     def tick(self):
         for o in self._objects:
-            o.tick(self)
+            o.restore_energy()
+
+        active_objects = [o for o in self._objects if o._energy > 0]
+        while len(active_objects) > 0:
+            active_objects.sort(key = lambda o: o._energy)
+
+            acting_object = active_objects.pop()
+            acting_object.tick(self)
+            if acting_object._energy > 0:
+                active_objects.append(acting_object)
 
     def set_message(self, callback):
         self._message = callback

@@ -23,15 +23,15 @@ class Mob(GameObject):
     def tick(self, level_map):
         roll = random.randrange(100)
         if 0 <= roll < 10:
-            level_map.grab_object(self)
+            item = level_map.grab_object(self)
         elif 10 <= roll <= 90:
             dx = random.randint(-1, 1)
             dy = random.randint(-1, 1)
             movement = AttrDict({'x': dx, 'y': dy})
             if (level_map.can_move_object(self, movement)):
-                level_map.move_object(self, movement)
+                self._energy -= level_map.move_object(self, movement)
         elif 90 <= roll < 100:
-            pass
+            self._energy -= self._speed
 
     def ongrab(self, target):
         if self._inventory_current_weight + target._weight > self._inventory_max_weight:
@@ -39,6 +39,7 @@ class Mob(GameObject):
                 'success': False,
                 'message': '{} cannot pick up {}, it is too heavy'.format(self.name, target._parent.name),
             })
+            self._energy -= 1 + target._weight * 0.05
         else:
             self._inventory.append(target)
             self._inventory_current_weight += target._weight
@@ -46,6 +47,7 @@ class Mob(GameObject):
                 'success': True,
                 'message': '{} picks up {}'.format(self.name, target._parent.name),
             })
+            self._energy -= 1 + target._weight * 0.1
         return result
 
     @staticmethod

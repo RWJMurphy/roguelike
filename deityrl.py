@@ -87,6 +87,7 @@ class DeityRL:
     def handle_key(self, key):
         if key in ('q', 'Q'):
             self._closed = True
+            self._player._energy = -1
             return True
         elif key in self._config.keybindings:
             return self.act_on_bound_key(key)
@@ -106,17 +107,17 @@ class DeityRL:
                 Bind.MOVE_W,
                 Bind.MOVE_NW
             ):
-            return self.move_object(self._player, AttrDict({'x':binding[0], 'y':binding[1]}))
+            return self.object_act_direction(self._player, AttrDict({'x':binding[0], 'y':binding[1]}))
         elif binding == Bind.PICKUP:
             return self._worldmap.grab_object(self._player)
         elif binding == Bind.WAIT:
-            return True
+            return self._player._speed # wait 1 tick
 
-    def move_object(self, obj, movement):
+    def object_act_direction(self, obj, movement):
         if (self._worldmap.can_move_object(obj, movement)):
-            return self._worldmap.move_object(obj, movement)
+            obj._energy -= self._worldmap.move_object(obj, movement)
         else:
-            return self._worldmap.object_act_in_direction(obj, movement)
+            obj._energy -= self._worldmap.object_act_in_direction(obj, movement)
 
     def add_message(self, message):
         if isinstance(message, list):

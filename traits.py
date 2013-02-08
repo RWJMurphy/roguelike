@@ -42,9 +42,9 @@ class Hostile(Trait):
         dy = random.randint(-1, 1)
         movement = AttrDict({'x': dx, 'y': dy})
         if (level_map.can_move_object(self._parent, movement)):
-            level_map.move_object(self._parent, movement)
+            self._parent._energy -= level_map.move_object(self._parent, movement)
         else:
-            level_map.object_act_in_direction(self._parent, movement)
+            self._parent._energy -= level_map.object_act_in_direction(self._parent, movement)
 
     def oncollide(self, collided_with):
         if collided_with.has_trait(Fightable):
